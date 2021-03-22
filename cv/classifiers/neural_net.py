@@ -132,8 +132,8 @@ class TwoLayerNet(object):
 
         db1 = dlayer1.sum(axis=0)
 
-        dW1 += reg * 2 * W1
-        dW2 += reg * 2 * W2
+        dW1 += reg * W1
+        dW2 += reg * W2
 
         grads = {'W1':dW1, 'b1':db1, 'W2':dW2, 'b2':db2}
         # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
