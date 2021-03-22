@@ -15,7 +15,7 @@ def softmax_loss_naive(W, X, y, reg):
     - X: A numpy array of shape (N, D) containing a minibatch of data.
     - y: A numpy array of shape (N,) containing training labels; y[i] = c means
       that X[i] has label c, where 0 <= c < C.
-    - reg: (float) regularization strength
+    - reg: (float) regularization strengWth
 
     Returns a tuple of:
     - loss as single float
@@ -32,8 +32,24 @@ def softmax_loss_naive(W, X, y, reg):
     # regularization!                                                           #
     #############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
+    scores = X.dot(W)
+    num_train = X.shape[0]
+    num_classes = W.shape[1]
 
-    pass
+    for i in range(num_train):
+      f = scores[i] - np.max(scores[i]) 
+      softmax = np.exp(f)/np.sum(np.exp(f))
+      loss += -np.log(softmax[y[i]])
+
+      for j in range(num_classes):
+        dW[:,j] += X[i] * softmax[j]
+      dW[:,y[i]] -= X[i]
+
+    loss /= num_train
+    dW /= num_train
+
+    loss += reg * np.sum(W * W)
+    dW += reg * 2 * W 
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
@@ -58,7 +74,22 @@ def softmax_loss_vectorized(W, X, y, reg):
     #############################################################################
     # *****START OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
-    pass
+    num_train = X.shape[0]
+    scores = X.dot(W)
+    scores = scores - np.max(scores, axis=1, keepdims=True)
+    
+    sum_exp_scores = np.exp(scores).sum(axis=1, keepdims=True)
+    softmax_matrix = np.exp(scores)/sum_exp_scores
+    loss = np.sum(-np.log(softmax_matrix[np.arange(num_train), y]) )
+
+    softmax_matrix[np.arange(num_train),y] -= 1
+    dW = X.T.dot(softmax_matrix)
+
+    loss /= num_train
+    dW /= num_train
+
+    loss += reg * np.sum(W * W)
+    dW += reg * 2 * W 
 
     # *****END OF YOUR CODE (DO NOT DELETE/MODIFY THIS LINE)*****
 
